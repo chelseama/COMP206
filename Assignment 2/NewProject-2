@@ -1,0 +1,65 @@
+#!/bin/bash
+#first cheack if the project name is missing or not by checking the number of arguments if the number of arguments is less then two then the project name is missing  
+if [ $# -lt 1 ]
+then
+	echo "project name is missing. Type in: NewProject project_name"
+#second to check if the project name is a single word or not by counting the words of project name
+else
+	if [ `echo $1 | wc -w` -gt 1 ]
+ 	then 
+    		echo "Your project name must be a single word. Type in: NewProject project_name"
+	else
+		mkdir ./$1
+    		mkdir ./$1/{docs,source,backup,archive}
+    		cd ./$1/source
+		# writting a compile inside NewProject by using echo >> filename
+		# first cheack if there is a file need to be compiled
+		# checking the number of arguments if the number of arguments is less then 3 then the file name is missing 
+    		echo '#!/bin/bash
+			if [ $1 != "-o" ]
+			then
+				if [ $# -lt 1 ]
+		    		then 
+		    			echo "You are missing File names. Type in: complie -o executable Files"
+				else
+					for n in $@
+					do
+						export cfiles="$cfiles"" ""$n"
+					done
+					cp $cfiles ../backup
+					gcc $cfiles
+		#redirect the error into error with overwritting
+					`gcc $cfiles` > errors
+				fi
+
+#$1=-o
+			else
+				if [ $# -lt 3 ]
+				then
+					echo "You are missing File names. Type in: complie -o executable Files"
+				else
+				#shift away the arguments which are not cfiles
+					shift
+					export filename=$1
+					shift 
+#put all the files need to be compiled in to a string so we can use it as a new value
+					for n in $@
+					do
+						export cfiles="$cfiles"" ""$n"
+					done
+#copy all the cfile to backup
+					cp $cfiles ../backup
+#compile cfiles
+					gcc -o $filename $cfiles
+#redirect the error into error with overwritting
+					`gcc -o $filename $cfiles` > errors
+				fi
+			fi
+
+#using more to view the error file
+		      more errors' >> compile
+		      
+
+	fi
+fi
+chmod 777 compile
